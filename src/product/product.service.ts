@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
+import { ProductEntity } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
+  constructor(
+    @InjectRepository(ProductEntity)
+    private repository: MongoRepository<ProductEntity>,
+  ) {}
   create(createProductDto: CreateProductDto) {
     return 'This action adds a new product';
   }
