@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
+import { ReviewEntity } from './entities/review.entity';
+import { ReviewModel } from './review.model/review.model';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
 export class ReviewService {
-  create(createReviewDto: CreateReviewDto) {
-    return 'This action adds a new review';
+  constructor(
+    @InjectRepository(ReviewEntity)
+    private repository: MongoRepository<ReviewEntity>,
+  ) {}
+
+  create(createReviewDto: CreateReviewDto): Promise<ReviewModel> {
+    return this.repository.save(new ReviewEntity(createReviewDto));
   }
 
-  findAll() {
-    return `This action returns all review`;
+  getByProductId(productId: string): Promise<ReviewModel[]> {
+    return this.repository.find({ where: { productId } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
+  findOne(id: string): Promise<ReviewModel | null> {
+    return this.repository.findOneBy(id);
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async update(
+    id: string,
+    updateReviewDto: UpdateReviewDto,
+  ): Promise<ReviewModel> {
+    const review = await this.repository.findOneBy(id);
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+    const updatedReview = { ...review, ...updateReviewDto };
+    return this.repository.save(updatedReview);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  async remove(id: string): Promise<boolean> {
+    await this.repository.delete(id);
+    return true;
+  }
+
+  async removeByProductId(productId: string): Promise<boolean> {
+    const entities = await this.repository.findBy({ where: { productId } });
+    await this.repository.remove(entities);
+    return true;
   }
 }

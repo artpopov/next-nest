@@ -24,20 +24,15 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-  @Get()
-  findAll() {
-    return this.productService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<ProductModel | null> {
     return this.productService.findOne(id);
   }
 
   @HttpCode(200)
   @Post()
-  find(@Body() dto: FindProductDto) {
-    return;
+  find(@Body() dto: FindProductDto): Promise<ProductModel[]> {
+    return this.productService.find(dto);
   }
 
   @Patch(':id')
@@ -46,7 +41,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.productService.remove(id);
   }
 }

@@ -1,5 +1,7 @@
+import { ObjectID } from 'typeorm';
+
 export class ProductModel {
-  _id: string;
+  _id: ObjectID;
   image: string;
   title: string;
   price: number;

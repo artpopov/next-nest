@@ -1,11 +1,11 @@
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 export type ProductData = PartialBy<ProductEntity, '_id'>;
 
-@Entity()
+@Entity('products')
 export class ProductEntity {
   @ObjectIdColumn()
-  _id: string;
+  _id: ObjectID;
 
   @Column()
   image: string;
