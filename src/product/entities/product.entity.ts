@@ -1,5 +1,7 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
+export type ProductData = PartialBy<ProductEntity, '_id'>;
+
 @Entity()
 export class ProductEntity {
   @ObjectIdColumn()
@@ -42,4 +44,8 @@ export class ProductEntity {
   characteristics: {
     [key: string]: string;
   };
+
+  constructor(data: ProductData) {
+    Object.assign(this, data);
+  }
 }
