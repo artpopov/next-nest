@@ -28,6 +28,11 @@ export class ReviewController {
     return this.reviewService.getByProductId(productId);
   }
 
+  @Get()
+  async findAll(): Promise<ReviewModel[] | null> {
+    return this.reviewService.findAll();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ReviewModel | null> {
     return this.reviewService.findOne(id);

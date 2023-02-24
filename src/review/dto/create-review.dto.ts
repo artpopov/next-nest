@@ -1,15 +1,13 @@
-import { ReviewEntityData } from '../entities/review.entity';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ObjectID } from 'typeorm';
 
-export class CreateReviewDto implements ReviewEntityData {
+export class CreateReviewDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @IsString()
   @IsNotEmpty()
-  productId: ObjectID;
+  productId: string;
 
   @IsOptional()
   @IsInt()

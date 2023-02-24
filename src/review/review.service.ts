@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectID } from 'mongodb';
 import { MongoRepository } from 'typeorm';
 import { ReviewEntity } from './entities/review.entity';
 import { ReviewModel } from './review.model/review.model';
@@ -14,15 +15,26 @@ export class ReviewService {
   ) {}
 
   create(createReviewDto: CreateReviewDto): Promise<ReviewModel> {
-    return this.repository.save(new ReviewEntity(createReviewDto));
+    return this.repository.save(
+      new ReviewEntity({
+        ...createReviewDto,
+        productId: ObjectID.createFromHexString(createReviewDto.productId),
+      }),
+    );
   }
 
-  getByProductId(productId: string): Promise<ReviewModel[]> {
-    return this.repository.find({ where: { productId } });
+  async getByProductId(productId: string): Promise<ReviewModel[]> {
+    return this.repository.find({
+      where: { productId: ObjectID.createFromHexString(productId) },
+    });
   }
 
   findOne(id: string): Promise<ReviewModel | null> {
     return this.repository.findOneBy(id);
+  }
+
+  findAll(): Promise<ReviewModel[] | null> {
+    return this.repository.find();
   }
 
   async update(
@@ -38,6 +50,10 @@ export class ReviewService {
   }
 
   async remove(id: string): Promise<boolean> {
+    const review = await this.repository.findOneBy(id);
+    if (!review) {
+      throw new NotFoundException('Sticker pack not found');
+    }
     await this.repository.delete(id);
     return true;
   }

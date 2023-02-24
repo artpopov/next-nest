@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { ProductModel } from './model/product.model';
-import { ReviewService } from 'src/review/review.service';
 import { FindProductDto } from './dto/find-product.dto';
+import { ReviewService } from '../review/review.service';
 
 @Injectable()
 export class ProductService {
