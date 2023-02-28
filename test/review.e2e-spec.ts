@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import { CreateReviewDto } from '../src/review/dto/create-review.dto';
 import * as mongodb from 'mongodb';
 import { Connection } from 'typeorm';
+import { AuthDto } from '../src/auth/dto/auth.dto';
 
 const productId = new mongodb.ObjectID().toString();
 
@@ -17,9 +18,15 @@ const testDto: CreateReviewDto = {
   productId,
 };
 
-describe('AppController (e2e)', () => {
+const loginDto: AuthDto = {
+  login: 'qwerty1',
+  password: 'qwerty1',
+};
+
+describe('ReviewController (e2e)', () => {
   let app: INestApplication;
   let createdId: string;
+  let token: string;
   let connection: Connection;
 
   beforeEach(async () => {
@@ -30,6 +37,12 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     connection = moduleFixture.get(getConnectionToken());
+
+    const { body } = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send(loginDto);
+
+    token = body.accessToken;
   });
 
   it('/review (POST) -  success', () => {
@@ -47,6 +60,7 @@ describe('AppController (e2e)', () => {
   it('/review/byProduct/:productId (GET) - success', () => {
     return request(app.getHttpServer())
       .get('/review/byProduct/' + productId)
+      .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .then(({ body }) => {
         expect(body.length).toBe(1);
@@ -58,6 +72,7 @@ describe('AppController (e2e)', () => {
   it('/review/byProduct/:productId (GET) - fail', () => {
     return request(app.getHttpServer())
       .get('/review/byProduct/' + new mongodb.ObjectID().toString())
+      .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .then(({ body }) => {
         expect(body.length).toBe(0);

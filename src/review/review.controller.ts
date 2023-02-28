@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewModel } from './review.model/review.model';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 
 @Controller('review')
 export class ReviewController {
@@ -21,6 +23,7 @@ export class ReviewController {
     return this.reviewService.create(createReviewDto);
   }
 
+  @UseGuards(JwtGuard)
   @Get('byProduct/:productId')
   async getByProduct(
     @Param('productId') productId: string,
